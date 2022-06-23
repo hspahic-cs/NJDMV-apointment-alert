@@ -1,0 +1,29 @@
+{
+    "location_with_array": {
+        "Bakers Basin": "186",
+        "Bayonne": "187",
+        "Camden": "189",
+        "Cardiff": "208",
+        "Delanco": "191",
+        "Eatontown": "192",
+        "Edison": "194",
+        "Elizabeth": "264",
+        "Flemington": "195",
+        "Freehold": "197",
+        "Lodi": "198",
+        "Newark": "200",
+        "North Bergen": "201",
+        "Oakland": "203",
+        "Paterson": "204",
+        "Rahway": "206",
+        "Randolph": "207",
+        "Rio Grande": "188",
+        "Salem": "190",
+        "South Plainfield": "193",
+        "Toms River": "196",
+        "Vineland": "199",
+        "Wayne": "202",
+        "West Deptford": "205"
+    },
+    "base_url_link": "https://telegov.njportal.com/njmvc/AppointmentWizard/15/"
+}
