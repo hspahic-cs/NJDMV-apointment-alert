@@ -105,3 +105,6 @@ def createBrowserScript(url, title, notepad_open):
     if(not notepad_open):
         webbrowser.open(f"{title}.txt")
     webbrowser.open(url, new=2)
+
+if __name__ == "__main__":
+    getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/19/267/2022-08-30/1115")

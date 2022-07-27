@@ -10,17 +10,16 @@ import winsound
 
 from bs4 import BeautifulSoup
 from click import confirm
-#from click import confirm
 from formFill import createBrowserScript
 from datetime import datetime, date
 
 
-UPDATE_DELAY = 10
+UPDATE_DELAY = 5
 RESET_DELAY = 900
 SUCCESS_DELAY = 120
 
 DEFAULT_TIMES = {0: "+0", 1: "+0", 2: "+0", 3: "+0", 4: "+0", 5: "+0", 6: "+0"} # 0 = Monday
-DATE_DICTIONARY = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
+DATE_DICTIONARY = {1:"January",  2:"February", 3:"March", 4:"April", 5:"May", 6:"June", 7:"July", 8:"August", 9:"September", 10:"October", 11:"November", 12:"December"}
 
 # Add appointment details
 
@@ -30,7 +29,7 @@ class DMV_Scaper:
     Attributes:
         (string) appointment: name of appoitment to be scraped
         (string[]) locations: target DMV's for appointment
-        (string[]) required_months: target months for appoitment  
+        {str: int} required_months: target months for appoitment with first interested date (format: {"July":20}) 
         {int: string} preferred_times: dictionary of preferred times for each day of the week
         format {"day": "time"} --> times can either be [ before time: -12 | after time: +6 | between time: 3-5]
     """
@@ -71,13 +70,26 @@ class DMV_Scaper:
 
         # Creates date object from available appoiitment for ease of access
         parsed_appointments = [time.split('/')[-2:] for time in appointment_links]
+        most_recent_apt = date.fromisoformat(parsed_appointments[0][0])
 
-        # Check day of week
-        DOW = date.fromisoformat(parsed_appointments[0][0]).weekday()
-        check = (DOW in self.preferred_times) and check
+        # Check day of week (DOW)
+        DOW = most_recent_apt.weekday()
+        if(not(DOW in self.preferred_times)):
+            return False
 
         # Check for required months
-        check = bool(set(self.required_months) & set(date_string.text.split())) and check
+        if(not (bool(set(self.required_months.keys()) & set(date_string.text.split())))):
+            return False
+        
+        # Check for day of month (DOM)
+        DOM = most_recent_apt.day
+        intended_date = self.required_months[DATE_DICTIONARY[most_recent_apt.month]]
+        
+        if(intended_date > 31 or intended_date < 0):
+            raise ValueError("Intended date not valid")
+        
+        if(intended_date <= DOM):
+            return False
         
         # If month & DOW, filter preferred time appointments
         # othewise return false
@@ -188,5 +200,5 @@ class DMV_Scaper:
                 time.sleep(UPDATE_DELAY)
 
 if __name__ == "__main__":
-    x = DMV_Scaper("InitialPermit.json", ["North Bergen", "Lodi", "Bayonne", "Paterson", "Wayne", "Elizabeth", "Newark"], ["June", "July"], {0: "-1200", 5: "-1200"})
+    x = DMV_Scaper("KnowledgeTest.json", ["North Bergen", "Lodi", "Bayonne", "Paterson", "Wayne", "Elizabeth", "Newark"], {"July": 10, "August": 10}, {0: "+12", 1: "+12", 2: "+12", 3: "+12", 4: "+12", 5: "+12", 6: "+12"})
     x.run()
