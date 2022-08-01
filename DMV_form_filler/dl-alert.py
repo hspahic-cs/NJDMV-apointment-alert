@@ -1,3 +1,4 @@
+import csv
 import json
 import urllib.request
 import re
@@ -43,6 +44,7 @@ class DMV_Scaper:
         self.required_months = required_months
         self.preferred_times = preferred_times
         self.url = None
+        self.user = None
 
     def getLocationData(self):
         """ Gets location encoding for NJDMV from json
@@ -116,15 +118,22 @@ class DMV_Scaper:
 
         return check
     
-    def log_appointment(self, appointments):
+    def log_appointment(self, appointments, location):
         """ Take all successfully found appointments & adds them to continous
         csv file, along with the user's name & the current date
         """
-        
-        with open("appointment_logs.csv", "w") as log:
-            for appointment in appointments:
-                log.write(appointment)
-            log.close()
+        rows = []
+
+        for appointment in appointments: 
+            raw_data = appointment.split("/")
+            ordered_data = {"name": self.name, "appointment_type": self.appointment, "location": location, "date": raw_data[-2], "time": raw_data[-1]}
+            rows.append(ordered_data)
+
+        FIELD_NAMES = ['name', 'appointment_type','location', 'date', 'time']
+
+        with open("appointment_logs.csv", "w", newline='') as log:
+            writer = csv.DictWriter(log, fieldnames = FIELD_NAMES)
+            writer.writerows(rows)
 
     def job(self):
         """ Performs appointment scraping, continously runs until process ended.
@@ -179,11 +188,14 @@ class DMV_Scaper:
                     if filtered_appointments:
                         for link in filtered_appointments:
                             link = "https://telegov.njportal.com" + link
-                            createBrowserScript(link, "DMV_Written_form", found)
+                            name = createBrowserScript(link, "DMV_Written_form", found)
+                            
+                            if(name):
+                                self.name = name
+
                             found += 1
                         
-                        self.log_appointment(filtered_appointments)
-
+                        self.log_appointment(filtered_appointments, location)
                         winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                         confirmation = True
                         

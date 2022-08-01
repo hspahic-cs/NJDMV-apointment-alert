@@ -63,12 +63,15 @@ def createBrowserScript(url, title, notepad_open):
     if(not exists(f"{title}.txt")):
         Path(f'{title}.txt').touch()
         
-        script = []
+        script = [], name = []
 
         with open("fields/text-fields.json", "r") as f:
             text_fields = json.load(f)
             for key in text_fields:
                 script.append(f"document.getElementById('{key}').value = '{text_fields[key]}'")
+                if key == "firstName" or key == "lastName":
+                    name.append(text_fields[key])
+                
             f.close()
 
         with open("fields/select-fields.json", "r") as f:
@@ -104,6 +107,8 @@ def createBrowserScript(url, title, notepad_open):
     if(not notepad_open):
         webbrowser.open(f"{title}.txt")
     webbrowser.open(url, new=2)
+
+    return name
 
 if __name__ == "__main__":
     getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/19/267/2022-08-30/1115")
