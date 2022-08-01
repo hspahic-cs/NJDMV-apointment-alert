@@ -62,45 +62,44 @@ def getFields(url):
 def createBrowserScript(url, title, notepad_open):
     if(not exists(f"{title}.txt")):
         Path(f'{title}.txt').touch()
-        createBrowserScript(url, title)
+        
+        script = []
 
-    script = []
+        with open("fields/text-fields.json", "r") as f:
+            text_fields = json.load(f)
+            for key in text_fields:
+                script.append(f"document.getElementById('{key}').value = '{text_fields[key]}'")
+            f.close()
 
-    with open("fields/text-fields.json", "r") as f:
-        text_fields = json.load(f)
-        for key in text_fields:
-            script.append(f"document.getElementById('{key}').value = '{text_fields[key]}'")
-        f.close()
-
-    with open("fields/select-fields.json", "r") as f:
-        select_fields = json.load(f)
-        found = False
-        for selection in select_fields.keys():
-            for i, key in enumerate(select_fields[selection]):
-                if (select_fields[selection][key] and not found):
-                    script.append(f"document.getElementById('{selection}').selectedIndex = {i + 1}")
-                    found = True
-                    break
-            if(not found):
-                script.append(f"document.getElementById('{selection}').selectedIndex = {0}")
+        with open("fields/select-fields.json", "r") as f:
+            select_fields = json.load(f)
             found = False
-        f.close()
+            for selection in select_fields.keys():
+                for i, key in enumerate(select_fields[selection]):
+                    if (select_fields[selection][key] and not found):
+                        script.append(f"document.getElementById('{selection}').selectedIndex = {i + 1}")
+                        found = True
+                        break
+                if(not found):
+                    script.append(f"document.getElementById('{selection}').selectedIndex = {0}")
+                found = False
+            f.close()
 
 
-    with open("fields/check-fields.json", "r") as f:
-        check_fields = json.load(f)
-        for key in check_fields:
-            script.append(f"document.getElementsByName('{key}')[0].checked = {check_fields[key]}")
-        f.close()
+        with open("fields/check-fields.json", "r") as f:
+            check_fields = json.load(f)
+            for key in check_fields:
+                script.append(f"document.getElementsByName('{key}')[0].checked = {check_fields[key]}")
+            f.close()
 
-    with open(f"{title}.txt", "w+") as script_file:
-        for cmd in script:
-            cmd += "\n"
-            script_file.write(cmd)
-        lines = script_file.readlines()
-        for line in lines:
-            print(line)
-    script_file.close()
+        with open(f"{title}.txt", "w+") as script_file:
+            for cmd in script:
+                cmd += "\n"
+                script_file.write(cmd)
+            lines = script_file.readlines()
+            for line in lines:
+                print(line)
+        script_file.close()
 
     if(not notepad_open):
         webbrowser.open(f"{title}.txt")

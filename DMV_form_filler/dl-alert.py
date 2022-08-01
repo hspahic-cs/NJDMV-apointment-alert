@@ -13,6 +13,8 @@ from click import confirm
 from formFill import createBrowserScript
 from datetime import datetime, date
 
+from pathlib import Path
+
 
 UPDATE_DELAY = 5
 RESET_DELAY = 900
@@ -63,7 +65,7 @@ class DMV_Scaper:
 
     def confirm_conditions(self, date_string, appointment_links):
         """ Helper function to clean code, parses links for all appointments in given day
-            then returns whether all conditions (Month, DOW, Time) are met for appointment
+            then returns whether all conditions (Month, DOM, DOW, Time) are met for appointment
             (bs4 object) date_string: 
         """    
         check = True
@@ -113,9 +115,18 @@ class DMV_Scaper:
                         check.append(appointment_links[i])
 
         return check
+    
+    def log_appointment(self, appointments):
+        """ Take all successfully found appointments & adds them to continous
+        csv file, along with the user's name & the current date
+        """
         
+        with open("appointment_logs.csv", "w") as log:
+            for appointment in appointments:
+                log.write(appointment)
+            log.close()
 
-    def job(self, buffer):
+    def job(self):
         """ Performs appointment scraping, continously runs until process ended.
         If appointment found, opens link providing notepad containing jscript to
         autofill form. Otherwise, keeps looking for appointments in "required_months."
@@ -170,6 +181,8 @@ class DMV_Scaper:
                             link = "https://telegov.njportal.com" + link
                             createBrowserScript(link, "DMV_Written_form", found)
                             found += 1
+                        
+                        self.log_appointment(filtered_appointments)
 
                         winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                         confirmation = True
@@ -186,13 +199,10 @@ class DMV_Scaper:
             time.sleep(RESET_DELAY)
             reset = False
 
-        buffer = []
-    
-
-    def run(self):
+    def __call__(self):
         while True:
             try:
-                self.job([])
+                self.job()
             except Exception as exception:
                 print("Error encountered", exception)
                 time.sleep(UPDATE_DELAY)
@@ -200,5 +210,4 @@ class DMV_Scaper:
                 time.sleep(UPDATE_DELAY)
 
 if __name__ == "__main__":
-    x = DMV_Scaper("KnowledgeTest.json", ["North Bergen", "Lodi", "Bayonne", "Paterson", "Wayne", "Elizabeth", "Newark"], {"July": 10, "August": 10}, {0: "+12", 1: "+12", 2: "+12", 3: "+12", 4: "+12", 5: "+12", 6: "+12"})
-    x.run()
+    DMV_Scaper(appointment="KnowledgeTest.json", locations=["North Bergen", "Lodi", "Bayonne", "Paterson", "Wayne", "Newark"], required_months={"August": 14}, preferred_times=DEFAULT_TIMES)
