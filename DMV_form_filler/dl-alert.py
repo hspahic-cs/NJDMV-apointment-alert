@@ -1,4 +1,5 @@
 import csv
+from dataclasses import field
 import json
 import urllib.request
 import re
@@ -45,6 +46,7 @@ class DMV_Scaper:
         self.preferred_times = preferred_times
         self.url = None
         self.user = None
+        self.name = None
 
     def getLocationData(self):
         """ Gets location encoding for NJDMV from json
@@ -131,9 +133,9 @@ class DMV_Scaper:
 
         FIELD_NAMES = ['name', 'appointment_type','location', 'date', 'time']
 
-        with open("appointment_logs.csv", "w", newline='') as log:
-            writer = csv.DictWriter(log, fieldnames = FIELD_NAMES)
-            writer.writerows(rows)
+        with open("appointment_logs.csv", "a", newline='') as log:
+            writer_object = csv.DictWriter(log, fieldnames=FIELD_NAMES)
+            writer_object.writerows(rows)
 
     def job(self):
         """ Performs appointment scraping, continously runs until process ended.
@@ -182,13 +184,15 @@ class DMV_Scaper:
                     for link in soup.find('div', id = "timeslots").find_all('a'):
                         # a href format: <a href="/njmvc/AppointmentWizard/15/198/2022-08-18/955" class="text-primary">
                         appointment_links.append(link.get('href'))
-                    
+
+                    print(appointment_links)
                     filtered_appointments = self.confirm_conditions(date_string, appointment_links)
 
                     if filtered_appointments:
+                        
                         for link in filtered_appointments:
                             link = "https://telegov.njportal.com" + link
-                            name = createBrowserScript(link, "DMV_Written_form", found)
+                            name = createBrowserScript(link, "DMV_Written_form", found, self.name)
                             
                             if(name):
                                 self.name = name
@@ -221,5 +225,9 @@ class DMV_Scaper:
             else:
                 time.sleep(UPDATE_DELAY)
 
+    # 7th to the 13th
+    # "North Bergen", "Bayonne", "Newark", "Elizabeth", "Rahway"
+
 if __name__ == "__main__":
-    DMV_Scaper(appointment="KnowledgeTest.json", locations=["North Bergen", "Lodi", "Bayonne", "Paterson", "Wayne", "Newark"], required_months={"August": 14}, preferred_times=DEFAULT_TIMES)
+    x = DMV_Scaper(appointment="KnowledgeTest.json", locations=["North Bergen", "Bayonne", "Newark", "Elizabeth", "Rahway"], required_months={"August": 16}, preferred_times={0: "+1200", 1: "+1200", 2: "+1200", 3: "+1200", 4: "+1200", 5: "+0", 6: "+0"})
+    x()

@@ -59,18 +59,21 @@ def getFields(url):
             json.dump(checked_values, f)
             f.close()
 
-def createBrowserScript(url, title, notepad_open):
+def createBrowserScript(url, title, notepad_open, name):
+    
+    copied_name = []
+
     if(not exists(f"{title}.txt")):
         Path(f'{title}.txt').touch()
         
-        script = [], name = []
+        script = [] 
 
         with open("fields/text-fields.json", "r") as f:
             text_fields = json.load(f)
             for key in text_fields:
                 script.append(f"document.getElementById('{key}').value = '{text_fields[key]}'")
                 if key == "firstName" or key == "lastName":
-                    name.append(text_fields[key])
+                    copied_name.append(text_fields[key])
                 
             f.close()
 
@@ -104,11 +107,22 @@ def createBrowserScript(url, title, notepad_open):
                 print(line)
         script_file.close()
 
+    # If form already exist & name doesnt, get name
+    elif(not name):
+        with open("fields/text-fields.json", "r") as f:
+            text_fields = json.load(f)
+            for key in text_fields:
+                if key == "firstName" or key == "lastName":
+                    copied_name.append(text_fields[key])
+                
+            f.close()
+
     if(not notepad_open):
         webbrowser.open(f"{title}.txt")
     webbrowser.open(url, new=2)
 
-    return name
+    return copied_name
 
 if __name__ == "__main__":
-    getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/19/267/2022-08-30/1115")
+    #getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/19/267/2022-09-13/1115")
+    createBrowserScript("https://telegov.njportal.com/njmvc/AppointmentWizard/15/186/2022-10-04/1345", "DMV_Written_form", True, "Default")
