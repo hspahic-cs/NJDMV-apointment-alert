@@ -185,7 +185,6 @@ class DMV_Scaper:
                         # a href format: <a href="/njmvc/AppointmentWizard/15/198/2022-08-18/955" class="text-primary">
                         appointment_links.append(link.get('href'))
 
-                    print(appointment_links)
                     filtered_appointments = self.confirm_conditions(date_string, appointment_links)
 
                     if filtered_appointments:
@@ -229,5 +228,5 @@ class DMV_Scaper:
     # "North Bergen", "Bayonne", "Newark", "Elizabeth", "Rahway"
 
 if __name__ == "__main__":
-    x = DMV_Scaper(appointment="KnowledgeTest.json", locations=["North Bergen", "Bayonne", "Newark", "Elizabeth", "Rahway"], required_months={"August": 16}, preferred_times={0: "+1200", 1: "+1200", 2: "+1200", 3: "+1200", 4: "+1200", 5: "+0", 6: "+0"})
+    x = DMV_Scaper(appointment="RealID.json", locations=["Lodi"], required_months={"January": 24}, preferred_times={0:-12})
     x()

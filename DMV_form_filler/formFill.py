@@ -124,5 +124,5 @@ def createBrowserScript(url, title, notepad_open, name):
     return copied_name
 
 if __name__ == "__main__":
-    #getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/19/267/2022-09-13/1115")
-    createBrowserScript("https://telegov.njportal.com/njmvc/AppointmentWizard/15/186/2022-10-04/1345", "DMV_Written_form", True, "Default")
+    #getFields("https://telegov.njportal.com/njmvc/AppointmentWizard/15/186/2023-02-03/935")
+    # createBrowserScript("https://telegov.njportal.com/njmvc/AppointmentWizard/15/186/2023-02-07/815", "DMV_Written_form", True, "Default")
