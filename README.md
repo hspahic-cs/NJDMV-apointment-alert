@@ -5,7 +5,7 @@ Want to get your driver's license? Can't get a appointment because of COVID? Wel
 2. Fill in the form                  --> Finding canceled appoitments alone isn't fast enough. You have 20 seconds maximum before another person takes your spot. Hence auto form filler. 
 3. Copy code into page console       --> We'll scrape the form, and create custom Javascript to fill in all the necessary information for you.
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 All YOU have to do is:
 1. Choose the locations & times you're looking for in the dl-alert.py file. 
